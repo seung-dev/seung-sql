@@ -7,12 +7,12 @@ RETURNS TABLE (
 	, trdd_no int
 	, trdd character varying
 	, shcode character varying
-	, open numeric
-	, high numeric
-	, low numeric
-	, close numeric
-	, jdiff_vol bigint
-	, value bigint
+	, open integer
+	, high integer
+	, low integer
+	, close integer
+	, jdiff_vol integer
+	, value integer
 	, sign character varying
 	)
 AS

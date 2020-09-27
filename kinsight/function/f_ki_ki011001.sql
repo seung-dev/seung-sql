@@ -22,16 +22,16 @@ BEGIN
 	FROM (
 		SELECT
 			ROW_NUMBER() OVER(ORDER BY date ASC) AS trdd_no
-			, t8413.date AS trdd
+			, t1305.date AS trdd
 		FROM
 			(
 				SELECT
 					DISTINCT date
 				FROM
-					t_eb_t8413
+					t_eb_t1305
 				WHERE 1 = 1
 					AND date >= base_date
-			) t8413
+			) t1305
 		) ord
 		LEFT OUTER JOIN t_ki_ki0110 ki0110
 			ON 1 = 1
@@ -52,16 +52,16 @@ BEGIN
 	FROM (
 		SELECT
 			ROW_NUMBER() OVER(ORDER BY date DESC) AS trdd_no
-			, t8413.date AS trdd
+			, t1305.date AS trdd
 		FROM
 			(
 				SELECT
 					DISTINCT date
 				FROM
-					t_eb_t8413
+					t_eb_t1305
 				WHERE 1 = 1
 					AND date < base_date
-			) t8413
+			) t1305
 		) ord
 		LEFT OUTER JOIN t_ki_ki0110 ki0110
 			ON 1 = 1
@@ -72,7 +72,7 @@ BEGIN
 	
 	GET DIAGNOSTICS prev_count = ROW_COUNT;
 	
-	RETURN QUERY SELECT prev_count AS prev, post_count AS post;
+	RETURN QUERY SELECT prev_count AS prev, post_count AS f_ki_ki011001;
 	
 END;
 $$

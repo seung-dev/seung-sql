@@ -7,15 +7,19 @@ RETURNS TABLE(
 		, etf_type character varying
 		, expn_rate character varying
 		, date character varying
-		, open integer
-		, high integer
-		, low integer
-		, close integer
-		, jdiff_vol integer
-		, value integer
+		, open numeric
+		, high numeric
+		, low numeric
+		, close numeric
 		, sign character varying
-		, change integer
-		, volume bigint
+		, change numeric
+		, diff numeric
+		, volume numeric
+		, fpvolume numeric
+		, covolume numeric
+		, ppvolume numeric
+		, value numeric
+		, marketcap numeric
 		, navdiff numeric
 		, nav numeric
 		, navchange numeric
@@ -170,16 +174,20 @@ BEGIN
 			, items.hname
 			, items.etf_type
 			, items.expn_rate
-			, t8413.date
-			, t8413.open
-			, t8413.high
-			, t8413.low
-			, t8413.close
-			, t8413.jdiff_vol
-			, t8413.value
-			, t8413.sign
-			, t1903.change
-			, t1903.volume
+			, t1305.date
+			, t1305.open
+			, t1305.high
+			, t1305.low
+			, t1305.close
+			, t1305.sign
+			, t1305.change
+			, t1305.diff
+			, t1305.volume
+			, t1305.fpvolume
+			, t1305.covolume
+			, t1305.ppvolume
+			, t1305.value
+			, t1305.marketcap
 			, t1903.navdiff
 			, t1903.nav
 			, t1903.navchange
@@ -222,6 +230,8 @@ BEGIN
 			, COALESCE(ki0310.m12_std_dev, -1) AS m12_std_dev
 			, COALESCE(calc.mmnt, -1) AS mmnt
 			, COALESCE(calc.mmnt_size, -1) AS mmnt_size
+			--, -1::numeric AS mmnt
+			--, -1::bigint AS mmnt_size
 		FROM (
 			SELECT
 				t8430.shcode
@@ -255,13 +265,13 @@ BEGIN
 						, AVG(ord_mmnt.mmnt) AS mmnt
 					FROM (
 						SELECT
-							t8413_mmnt.shcode
+							t1305_mmnt.shcode
 							, trdd_mmnt.trdd
 							, base_mmnt.base_no - trdd_mmnt.trdd_no AS trdd_no
-							, ABS(base_mmnt.base_cp / t8413_mmnt.close) AS mmnt
+							, ABS(base_mmnt.base_cp / t1305_mmnt.close) AS mmnt
 						FROM
 							t_ki_ki0110 trdd_mmnt
-							, t_eb_t8413 t8413_mmnt
+							, t_eb_t1305 t1305_mmnt
 							LEFT OUTER JOIN (
 								SELECT
 									a_mmnt.trdd_no AS base_no
@@ -269,15 +279,15 @@ BEGIN
 									, b_mmnt.shcode
 								FROM
 									t_ki_ki0110 a_mmnt
-									, t_eb_t8413 b_mmnt
+									, t_eb_t1305 b_mmnt
 								WHERE 1 = 1
 									AND a_mmnt.trdd = b_mmnt.date
 									AND a_mmnt.trdd = v_mmnt_date
 								) base_mmnt
 								ON 1 = 1
-								AND base_mmnt.shcode = t8413_mmnt.shcode
+								AND base_mmnt.shcode = t1305_mmnt.shcode
 							WHERE 1 = 1
-								AND trdd_mmnt.trdd = t8413_mmnt.date
+								AND trdd_mmnt.trdd = t1305_mmnt.date
 								AND trdd_mmnt.trdd < v_mmnt_date
 							) ord_mmnt
 						WHERE 1 = 1
@@ -288,16 +298,16 @@ BEGIN
 				) calc
 				ON 1 = 1
 				AND items.shcode = calc.shcode
-			, t_eb_t8413 t8413
+			, t_eb_t1305 t1305
 			, t_eb_t1903 t1903
 			, t_ki_ki0310 ki0310
 		WHERE 1 = 1
-			AND items.shcode = t8413.shcode
+			AND items.shcode = t1305.shcode
 			AND items.shcode = t1903.shcode
 			AND items.shcode = ki0310.shcode
-			AND t8413.date = t1903.date
-			AND t8413.date = ki0310.trdd
-			AND t8413.date = '20200903'
+			AND t1305.date = t1903.date
+			AND t1305.date = ki0310.trdd
+			AND t1305.date = v_std_trdd
 		;
 
 END;
