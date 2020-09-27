@@ -7,13 +7,19 @@ RETURNS TABLE (
 	, trdd_no int
 	, trdd character varying
 	, shcode character varying
-	, open integer
-	, high integer
-	, low integer
-	, close integer
-	, jdiff_vol integer
-	, value integer
+	, open numeric
+	, high numeric
+	, low numeric
+	, close numeric
 	, sign character varying
+	, change numeric
+	, diff numeric
+	, volume numeric
+	, fpvolume numeric
+	, covolume numeric
+	, ppvolume numeric
+	, value numeric
+	, marketcap numeric
 	)
 AS
 $$
@@ -44,15 +50,21 @@ BEGIN
 	;
 	
 	SELECT
-		COALESCE(req_trdd_from, '20000101')
-		, COALESCE(req_trdd_to, TO_CHAR(NOW(), 'YYYYMMDD'))
-		, COALESCE(req_page_index, 1)
+		COALESCE(req_page_index, 1)
 		, COALESCE(req_page_size, 20)
+		, CASE
+			WHEN req_trdd_from = '' THEN '20000101'
+			ELSE COALESCE(req_trdd_from, '20000101')
+			END AS trddf
+		, CASE
+			WHEN req_trdd_from = '' THEN TO_CHAR(NOW(), 'YYYYMMDD')
+			ELSE COALESCE(req_trdd_to, TO_CHAR(NOW(), 'YYYYMMDD'))
+			END AS trddt
 	INTO
-		req_trdd_from
-		, req_trdd_to
-		, req_page_index
+		req_page_index
 		, req_page_size
+		, req_trdd_from
+		, req_trdd_to
 		;
 	
 	row_from = (req_page_index - 1) * req_page_size + 1;
@@ -68,30 +80,42 @@ BEGIN
 			, ki012000.high
 			, ki012000.low
 			, ki012000.close
-			, ki012000.jdiff_vol
-			, ki012000.value
 			, ki012000.sign
+			, ki012000.change
+			, ki012000.diff
+			, ki012000.volume
+			, ki012000.fpvolume
+			, ki012000.covolume
+			, ki012000.ppvolume
+			, ki012000.value
+			, ki012000.marketcap
 		FROM (
 			SELECT
 				ROW_NUMBER() OVER (ORDER BY trd.trdd_no DESC) AS rn
 				, trd.trdd_no
 				, trd.trdd
-				, t8413.shcode
-				, t8413.open
-				, t8413.high
-				, t8413.low
-				, t8413.close
-				, t8413.jdiff_vol
-				, t8413.value
-				, t8413.sign
+				, t1305.shcode
+				, t1305.open
+				, t1305.high
+				, t1305.low
+				, t1305.close
+				, t1305.sign
+				, t1305.change
+				, t1305.diff
+				, t1305.volume
+				, t1305.fpvolume
+				, t1305.covolume
+				, t1305.ppvolume
+				, t1305.value
+				, t1305.marketcap
 			FROM
-				t_etf_trdd trd
-				, t_eb_t8413 t8413
+				t_ki_ki0110 trd
+				, t_eb_t1305 t1305
 			WHERE 1 = 1
-				AND trd.trdd = t8413.date
+				AND trd.trdd = t1305.date
 				AND trd.trdd >= req_trdd_from
 				AND trd.trdd <= req_trdd_to
-				AND t8413.shcode = req_shcode
+				AND t1305.shcode = req_shcode
 			) ki012000
 		WHERE 1 = 1
 			AND ki012000.rn >= row_from
