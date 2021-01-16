@@ -10,6 +10,8 @@ DECLARE
 	v_scope int;
 BEGIN
 
+BEGIN
+
 	SELECT
 		ki0110.trdd_no
 		, ki0110.trdd
@@ -128,7 +130,7 @@ BEGIN
 						ELSE 0
 						END AS d20_vol_size
 					, CASE
-						WHEN suf.trdd_no > lst.trdd_no - 20 THEN suf.jdiff_vol
+						WHEN suf.trdd_no > lst.trdd_no - 20 THEN suf.volume
 						ELSE 0
 						END AS d20_vol
 					, CASE
@@ -192,14 +194,14 @@ BEGIN
 						SELECT
 							ki0110.trdd_no
 							, ki0110.trdd
-							, t8413.shcode
-							, ABS(t8413.close)::decimal AS close
+							, t1305.shcode
+							, ABS(t1305.close)::decimal AS close
 						FROM
 							t_ki_ki0110 ki0110
-							, t_eb_t8413 t8413
+							, t_eb_t1305 t1305
 						WHERE 1 = 1
-							AND ki0110.trdd = t8413.date
-							AND t8413.shcode IN (
+							AND ki0110.trdd = t1305.date
+							AND t1305.shcode IN (
 								SELECT
 									shcode
 								FROM
@@ -214,29 +216,29 @@ BEGIN
 						SELECT
 							ki0110.trdd_no
 							, ki0110.trdd
-							, t8413.shcode
-							, ABS(t8413.close)::decimal AS close
-							, ABS(t8413.jdiff_vol) AS jdiff_vol
-							, ABS(t8413.value) AS value
+							, t1305.shcode
+							, ABS(t1305.close)::decimal AS close
+							, ABS(t1305.volume) AS volume
+							, ABS(t1305.value) AS value
 						FROM
 							t_ki_ki0110 ki0110
-							, t_eb_t8413 t8413
+							, t_eb_t1305 t1305
 						WHERE
 							1 = 1
-							AND ki0110.trdd = t8413.date
+							AND ki0110.trdd = t1305.date
 					) suf
 					, (
 						SELECT
 							ki0110.trdd_no
 							, ki0110.trdd
-							, t8413.shcode
-							, ABS(t8413.close)::decimal AS close
+							, t1305.shcode
+							, ABS(t1305.close)::decimal AS close
 						FROM
 							t_ki_ki0110 ki0110
-							, t_eb_t8413 t8413
+							, t_eb_t1305 t1305
 						WHERE
 							1 = 1
-							AND ki0110.trdd = t8413.date
+							AND ki0110.trdd = t1305.date
 					) pre
 				WHERE 1 = 1
 					AND lst.shcode = suf.shcode
@@ -320,11 +322,11 @@ BEGIN
 								ELSE 0
 								END AS m3_mmnt_size
 							, CASE
-								WHEN suf.trdd_no > lst.trdd_no - 20 * 3 THEN lst.close / pre.close
+								WHEN suf.trdd_no > lst.trdd_no - 20 * 3 THEN 1.0 * lst.close / pre.close
 								ELSE 0
 								END AS m3_mmnt
 							, CASE
-								WHEN suf.trdd_no > lst.trdd_no - 20 * 3 THEN (suf.close - pre.close) / pre.close
+								WHEN suf.trdd_no > lst.trdd_no - 20 * 3 THEN 1.0 * (suf.close - pre.close) / pre.close
 								ELSE 0
 								END AS m3_std_dev
 							, CASE
@@ -332,11 +334,11 @@ BEGIN
 								ELSE 0
 								END AS m6_mmnt_size
 							, CASE
-								WHEN suf.trdd_no > lst.trdd_no - 20 * 6 THEN lst.close / pre.close
+								WHEN suf.trdd_no > lst.trdd_no - 20 * 6 THEN 1.0 * lst.close / pre.close
 								ELSE 0
 								END AS m6_mmnt
 							, CASE
-								WHEN suf.trdd_no > lst.trdd_no - 20 * 6 THEN (suf.close - pre.close) / pre.close
+								WHEN suf.trdd_no > lst.trdd_no - 20 * 6 THEN 1.0 * (suf.close - pre.close) / pre.close
 								ELSE 0
 								END AS m6_std_dev
 							, CASE
@@ -344,11 +346,11 @@ BEGIN
 								ELSE 0
 								END AS m12_mmnt_size
 							, CASE
-								WHEN suf.trdd_no > lst.trdd_no - 20 * 12 THEN lst.close / pre.close
+								WHEN suf.trdd_no > lst.trdd_no - 20 * 12 THEN 1.0 * lst.close / pre.close
 								ELSE 0
 								END AS m12_mmnt
 							, CASE
-								WHEN suf.trdd_no > lst.trdd_no - 20 * 12 THEN (suf.close - pre.close) / pre.close
+								WHEN suf.trdd_no > lst.trdd_no - 20 * 12 THEN 1.0 * (suf.close - pre.close) / pre.close
 								ELSE 0
 								END AS m12_std_dev
 						FROM
@@ -356,14 +358,14 @@ BEGIN
 								SELECT
 									ki0110.trdd_no
 									, ki0110.trdd
-									, t8413.shcode
-									, ABS(t8413.close) AS close
+									, t1305.shcode
+									, ABS(t1305.close) AS close
 								FROM
 									t_ki_ki0110 ki0110
-									, t_eb_t8413 t8413
+									, t_eb_t1305 t1305
 								WHERE 1 = 1
-									AND ki0110.trdd = t8413.date
-									AND t8413.shcode IN (
+									AND ki0110.trdd = t1305.date
+									AND t1305.shcode IN (
 										SELECT
 											shcode
 										FROM
@@ -378,27 +380,27 @@ BEGIN
 								SELECT
 									ki0110.trdd_no
 									, ki0110.trdd
-									, t8413.shcode
-									, ABS(t8413.close) AS close
+									, t1305.shcode
+									, ABS(t1305.close) AS close
 								FROM
 									t_ki_ki0110 ki0110
-									, t_eb_t8413 t8413
+									, t_eb_t1305 t1305
 								WHERE
 									1 = 1
-									AND ki0110.trdd = t8413.date
+									AND ki0110.trdd = t1305.date
 							) suf
 							, (
 								SELECT
 									ki0110.trdd_no
 									, ki0110.trdd
-									, t8413.shcode
-									, ABS(t8413.close) AS close
+									, t1305.shcode
+									, ABS(t1305.close) AS close
 								FROM
 									t_ki_ki0110 ki0110
-									, t_eb_t8413 t8413
+									, t_eb_t1305 t1305
 								WHERE
 									1 = 1
-									AND ki0110.trdd = t8413.date
+									AND ki0110.trdd = t1305.date
 							) pre
 						WHERE 1 = 1
 							AND lst.shcode = suf.shcode

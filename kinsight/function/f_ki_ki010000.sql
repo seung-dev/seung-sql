@@ -17,7 +17,7 @@ BEGIN
 
 	SELECT
 		COALESCE(req::json->>'gubun', '') AS gubun
-		, COALESCE(req::json->>'etf_gubun') AS etf_gubun
+		, COALESCE(req::json->>'etf_gubun', '') AS etf_gubun
 	INTO
 		req_gubun
 		, req_etf_gubun
@@ -29,23 +29,28 @@ BEGIN
 		RETURN QUERY
 			SELECT
 				t8430.shcode
-				, t8430.hname
+				, t9945.hname
 				, t8430.gubun
 				, t8430.etfgubun
 			FROM
 				t_eb_t8430 t8430
+				, t_eb_t9945 t9945
+			WHERE 1 = 1
+				AND t8430.shcode = t9945.shcode
 			ORDER BY t8430.shcode
 			;
 	ELSIF req_gubun <> '' AND req_etf_gubun = '' THEN
 		RETURN QUERY
 			SELECT
 				t8430.shcode
-				, t8430.hname
+				, t9945.hname
 				, t8430.gubun
 				, t8430.etfgubun
 			FROM
 				t_eb_t8430 t8430
+				, t_eb_t9945 t9945
 			WHERE 1 = 1
+				AND t8430.shcode = t9945.shcode
 				AND t8430.gubun = req_gubun
 			ORDER BY t8430.shcode
 			;
@@ -53,12 +58,14 @@ BEGIN
 		RETURN QUERY
 			SELECT
 				t8430.shcode
-				, t8430.hname
+				, t9945.hname
 				, t8430.gubun
 				, t8430.etfgubun
 			FROM
 				t_eb_t8430 t8430
+				, t_eb_t9945 t9945
 			WHERE 1 = 1
+				AND t8430.shcode = t9945.shcode
 				AND t8430.etfgubun = req_etf_gubun
 			ORDER BY t8430.shcode
 			;
@@ -66,12 +73,14 @@ BEGIN
 		RETURN QUERY
 			SELECT
 				t8430.shcode
-				, t8430.hname
+				, t9945.hname
 				, t8430.gubun
 				, t8430.etfgubun
 			FROM
 				t_eb_t8430 t8430
+				, t_eb_t9945 t9945
 			WHERE 1 = 1
+				AND t8430.shcode = t9945.shcode
 				AND t8430.gubun = req_gubun
 				AND t8430.etfgubun = req_etf_gubun
 			ORDER BY t8430.shcode

@@ -4,6 +4,9 @@ CREATE OR REPLACE FUNCTION public.f_ki_ki031000(
 RETURNS TABLE(
 		shcode character varying
 		, hname character varying
+		, asset character varying
+		, region character varying
+		, category character varying
 		, etf_type character varying
 		, expn_rate character varying
 		, date character varying
@@ -172,6 +175,9 @@ BEGIN
 		SELECT
 			items.shcode
 			, items.hname
+			, items.asset
+			, items.region
+			, items.category
 			, items.etf_type
 			, items.expn_rate
 			, t1305.date
@@ -235,7 +241,10 @@ BEGIN
 		FROM (
 			SELECT
 				t8430.shcode
-				, t8430.hname
+				, t9945.hname
+				, COALESCE(ki0120.asset, '') AS asset
+				, COALESCE(ki0120.region, '') AS region
+				, COALESCE(ki0120.category, '') AS category
 				, COALESCE(n0101.etf_type, '') AS etf_type
 				, COALESCE(n0102.expn_rate, '') AS expn_rate
 			FROM
@@ -246,7 +255,12 @@ BEGIN
 				LEFT OUTER JOIN t_etf_n0102 n0102
 					ON 1 = 1
 					AND t8430.shcode = n0102.item_code
+				LEFT OUTER JOIN t_ki_ki0120 ki0120
+					ON 1 = 1
+					AND t8430.shcode = ki0120.shcode
+				, t_eb_t9945 t9945
 			WHERE 1 = 1
+				AND t8430.shcode = t9945.shcode
 				AND t8430.gubun = '1'
 				AND t8430.etfgubun = '1'
 			) items
